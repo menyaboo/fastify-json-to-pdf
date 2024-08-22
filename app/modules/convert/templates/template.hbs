@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="http://localhost:3000/style.css">
+</head>
+
+<!-- Решить вопрос с шрифтами почему он их не видит -->
+<!-- Можно их брать с гугловского сервера нооо нет Pribambas шрифта -->
+<!-- И еще здесь все подключения через http://localhost:3000 что костыль -->
+<!--ну или передать в стэйт и писать через {} ну тоже не оч -->
+<!-- Он должен быть обсалютный /fonts /images и тп -->
+<style>
+    @font-face {
+        font-family: "Pribambas";
+        font-style: normal;
+        font-weight: 400;
+        src: url('http://localhost:3000/fonts/Pribambas-Regular.woff2') format("woff2");
+    }
+
+    @font-face {
+        font-family: "Motserrat Alternates";
+        font-style: normal;
+        font-weight: 400;
+        src: url('http://localhost:3000/fonts/MontserratAlternates-Regular.woff') format("woff");
+    }
+
+    @font-face {
+        font-family: "Motserrat Alternates";
+        font-style: normal;
+        font-weight: 700;
+        src: url('http://localhost:3000/fonts/MontserratAlternates-Bold.woff') format("woff");
+    }
+</style>
+
+<script>
+    // нужно написать скрипт для разбиения тэга p если он не влазит в контейнер
+    // причем его нужно поместить внутрь section.div.content
+</script>
+
+<body>
+    <section class="top">
+        <h3 class="accent ">ЯВСКАЗКЕ</h3>
+        <h1 class="text-center montserrat-alternates-bold">{{title}}</h1>
+    </section>
+    {{#each chapters}}
+        <section class="chapter">
+            <div class="image">
+                <img src="http://localhost:3000/images/img.png" alt="{{title}}">
+            </div>
+
+            <div class="content">
+                <h2>{{title}}</h2>
+                <p class="montserrat-alternates-regular">{{text}}</p>
+            </div>
+        </section>
+    {{/each}}
+</body>
+</html>
