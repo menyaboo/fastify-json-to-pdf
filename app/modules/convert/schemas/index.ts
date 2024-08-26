@@ -7,7 +7,7 @@ export const ConvertSchema = Joi.object({
         Joi.object({
             title: Joi.string().required(),
             text: Joi.string().required(),
-            pic_generation: Joi.string().required(),
+            picture: Joi.string().required(),
         })
     ).required(),
 });
@@ -18,6 +18,6 @@ export type IConvertSchema = {
     chapters: {
         title: string;
         text: string;
-        pic_generation: string;
+        picture: string;
     }[];
 };

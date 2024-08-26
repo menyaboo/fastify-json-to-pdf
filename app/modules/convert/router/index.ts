@@ -1,37 +1,50 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from 'fastify';
 import {ConvertSchema, IConvertSchema} from "../schemas";
-import {html} from "../../../common/static";
-import {generatePDF} from "../utils/indes";
+import {expHtml} from "../../../common/static";
+import {generateHTML, generatePDF} from "../utils";
 
 
 export async function PdfConverterRouter(fastify: FastifyInstance) {
     fastify.route({
         method: 'GET',
-        url: '',
+        url: '/html',
         handler: async function (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-            const pdf = await generatePDF(html);
+            const html = generateHTML(expHtml);
 
-            return reply
-                .code(200)
-                .header('Content-Type', 'application/pdf')
-                .header('Content-Disposition', 'attachment; filename="document.pdf"')
-                .send(pdf);
+            return reply.code(200).type('text/html').send(html);
+        },
+    });
+
+    fastify.route({
+        method: 'POST',
+        url: '/html',
+        schema: {
+            body: ConvertSchema,
+        },
+        handler: async function (this: FastifyInstance, request: FastifyRequest<{ Body: IConvertSchema }>, reply: FastifyReply): Promise<FastifyReply> {
+            const html = generateHTML(request.body);
+
+            return reply.code(200).type('text/html').send(html);
         },
     })
 
     fastify.route({
         method: 'GET',
-        url: '/html',
+        url: '/pdf',
         handler: async function (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
-            const pdf = await generatePDF(html, false);
+            const html = await generatePDF(expHtml);
 
-            return reply.code(201).type('text/html').send(pdf);
+            return reply
+                .code(200)
+                .header('Content-Type', 'application/pdf')
+                .header('Content-Disposition', 'attachment; filename="document.pdf"')
+                .send(html);
         },
-    })
+    });
 
     fastify.route({
         method: 'POST',
-        url: '',
+        url: '/pdf',
         schema: {
             body: ConvertSchema,
         },

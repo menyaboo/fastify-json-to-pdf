@@ -3,59 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{host}}/style.css">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="http://localhost:3000/style.css">
 </head>
-
-<!-- Решить вопрос с шрифтами почему он их не видит -->
-<!-- Можно их брать с гугловского сервера нооо нет Pribambas шрифта -->
-<!-- И еще здесь все подключения через http://localhost:3000 что костыль -->
-<!--ну или передать в стэйт и писать через {} ну тоже не оч -->
-<!-- Он должен быть обсалютный /fonts /images и тп -->
-<style>
-    @font-face {
-        font-family: "Pribambas";
-        font-style: normal;
-        font-weight: 400;
-        src: url('http://localhost:3000/fonts/Pribambas-Regular.woff2') format("woff2");
-    }
-
-    @font-face {
-        font-family: "Motserrat Alternates";
-        font-style: normal;
-        font-weight: 400;
-        src: url('http://localhost:3000/fonts/MontserratAlternates-Regular.woff') format("woff");
-    }
-
-    @font-face {
-        font-family: "Motserrat Alternates";
-        font-style: normal;
-        font-weight: 700;
-        src: url('http://localhost:3000/fonts/MontserratAlternates-Bold.woff') format("woff");
-    }
-</style>
-
-<script>
-    // нужно написать скрипт для разбиения тэга p если он не влазит в контейнер
-    // причем его нужно поместить внутрь section.div.content
-</script>
 
 <body>
     <section class="top">
-        <h3 class="accent ">ЯВСКАЗКЕ</h3>
-        <h1 class="text-center montserrat-alternates-bold">{{title}}</h1>
+        <h2 class="accent pribambas">ЯВСКАЗКЕ</h2>
+        <h1 class="text-center pribambas">{{title}}</h1>
     </section>
     {{#each chapters}}
         <section class="chapter">
             <div class="image">
-                <img src="http://localhost:3000/images/img.png" alt="{{title}}">
+                <img src="{{picture}}" alt="{{title}}">
             </div>
 
             <div class="content">
-                <h2>{{title}}</h2>
-                <p class="montserrat-alternates-regular">{{text}}</p>
+                <h3>{{title}}</h3>
+                <p>{{text}}</p>
             </div>
         </section>
     {{/each}}
+    <section class="chapter">
+        <div class="questions">
+            <div class="content">
+                <h3>Вопросы для обсуждения</h3>
+                <ul>
+                    {{#each questions_about_tale}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            <div class="buttons content">
+                <a href="#">
+                    <button>Оставить отзыв</button>
+                </a>
+                <a href="#">
+                    <button class="btn-accent">Создать сказку</button>
+                </a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
+
+
+<!-- Функция для разбиения текста на секции -->
+<script defer>
+    function splitTextIntoSections() {
+        const sections = document.querySelectorAll('section.chapter');
+
+        sections?.forEach(section => {
+            const pElement = section.querySelector('p');
+            if (!pElement) return;
+
+            const text = pElement.textContent;
+            const imgElement = section.querySelector('img');
+            const imgHeight = imgElement ? imgElement.clientHeight : 0;
+            const sectionHeight = section.clientHeight;
+            const availableHeight = sectionHeight - imgHeight;
+
+            if (availableHeight > 0) {
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.visibility = 'hidden';
+                tempDiv.style.whiteSpace = 'pre-wrap';
+                //tempDiv.style.padding = `40px`;
+                tempDiv.style.width = `${pElement.clientWidth - 200}px`;
+                tempDiv.style.font = getComputedStyle(pElement).font;
+                tempDiv.style.lineHeight = getComputedStyle(pElement).lineHeight;
+                document.body.appendChild(tempDiv);
+
+                let currentIndex = 0;
+                let remainingText = text;
+
+                while (remainingText.length > 0) {
+                    tempDiv.textContent = remainingText;
+                    while (tempDiv.clientHeight > (currentIndex === 0 ? availableHeight : sectionHeight) && tempDiv.textContent.length > 0) {
+                        const lastSpace = tempDiv.textContent.lastIndexOf(' ');
+                        if (lastSpace > 0) {
+                            tempDiv.textContent = tempDiv.textContent.slice(0, lastSpace);
+                        } else {
+                            break;
+                        }
+                    }
+
+                    const fittingText = tempDiv.textContent;
+                    remainingText = remainingText.slice(fittingText.length).trim();
+
+                    const htmlFittingText = fittingText.replace(/\n/g, '<br/>');
+
+                    if (currentIndex === 0) {
+                        pElement.innerHTML = htmlFittingText;
+                    } else {
+                        const newSection = document.createElement('section');
+                        newSection.className = 'chapter';
+
+                        const contentDiv = document.createElement('div');
+                        contentDiv.className = 'content';
+
+                        const newPElement = document.createElement('p');
+                        newPElement.innerHTML = htmlFittingText;
+
+                        contentDiv.appendChild(newPElement);
+                        newSection.appendChild(contentDiv);
+
+                        section.parentNode.insertBefore(newSection, section.nextSibling);
+                    }
+
+                    currentIndex++;
+                }
+
+                document.body.removeChild(tempDiv);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', splitTextIntoSections);
+</script>
