@@ -31,7 +31,7 @@ export const generatePDF = async (eventData: IConvertSchema) => {
 }
 
 
-export const generateHTML = (eventData: IConvertSchema & { host: string }) => {
+export const generateHTML = (eventData: IConvertSchema & { host?: string }) => {
     const templatePath = path.join(__dirname, '../templates', 'template.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateSource);
